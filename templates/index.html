@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Price Category Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background-image: url("/static/im.jpg"); 
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 700px;
+            margin: 60px auto;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .form-group label {
+            color: #fff;
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-container">
+        <h2>🏠 Price Category Prediction</h2>
+        <form id="predictionForm">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Bedrooms</label>
+                    <input type="number" name="bedrooms" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Bathrooms</label>
+                    <input type="number" name="bathrooms" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Square Feet</label>
+                    <input type="number" name="square_feet" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Location</label>
+                    <select name="location" class="form-control" required>
+                        <option>Manhattan</option>
+                        <option>Brooklyn</option>
+                        <option>Bronx</option>
+                        <option>Queens</option>
+                        <option>Staten Island</option>
+                        <option>Harlem</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Year Built</label>
+                    <input type="number" name="year_built" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Garage (0 or 1)</label>
+                    <input type="number" name="garage" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Has Pool (0 or 1)</label>
+                    <input type="number" name="has_pool" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Property Type</label>
+                    <select name="property_type" class="form-control" required>
+                        <option>Apartment</option>
+                        <option>Condo</option>
+                        <option>House</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Number of Floors</label>
+                    <input type="number" name="num_floors" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Has Basement (0 or 1)</label>
+                    <input type="number" name="has_basement" class="form-control" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-block">Predict</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById("predictionForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        const response = await fetch("/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.predicted_category) {
+            document.getElementById("result").innerText = "🏷️ Predicted Category: " + result.predicted_category;
+        } else {
+            document.getElementById("result").innerText = "❌ Error: " + result.error;
+        }
+    });
+</script>
+
+</body>
+</html>
